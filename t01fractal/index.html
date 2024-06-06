@@ -8,10 +8,10 @@
     <script type="text/javascript" src="scripts/mylib.js"></script>
     <title>VG6 fractal</title>
   </head>
+
   <body>
     <canvas id="MyGL" width="800px" height="800px"></canvas>
     <script type="module">
-
       window.addEventListener("load", () => {
         initGL();
         const draw = () => {
@@ -19,7 +19,7 @@
           window.requestAnimationFrame(draw);
         };
         draw();
-      })
+      });
     </script>
   </body>
 </html>
