@@ -1,9 +1,9 @@
 import {vec3} from "./mth_vec3";
-import {mat4, matrDeterm3x3, matrRotate, matrRotateX, matrRotateY, matrRotateZ, scale, matrOrtho, matrFrustum, matView} from "./mth_mat4";
-import {cam} from "./mth_cam";
 export {vec3}; 
+import {mat4, matrDeterm3x3, matrRotate, matrRotateX, matrRotateY, matrRotateZ, scale, matrOrtho, matrFrustum, matView} from "./mth_mat4";
 export {mat4, matrDeterm3x3, matrRotate, matrRotateX, matrRotateY, matrRotateZ, scale, matrOrtho, matrFrustum, matView}; 
-export {cam}; 
+import {cam} from "./mth_cam"; 
+export {cam};
 
 // Degree to Radian and back macro functions
 export function D2R(D) {

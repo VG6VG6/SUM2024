@@ -3,7 +3,6 @@ let canvas,
   timeLoc,
   mouseLoc,
   colorLoc,
-  color = [255, 0, 0],
   mousePosX = 0,
   MouseZ = 0,
   mousePosY = 0;
@@ -41,7 +40,6 @@ export function shaderInit() {
   in vec2 DrawPos;
   uniform float Time;
   uniform vec3 Mouse;
-  uniform vec3 Color;
 
   vec2 CmplMulCmpl( vec2 Z1, vec2 Z2 )
   {
@@ -67,8 +65,7 @@ export function shaderInit() {
   
     Z = DrawPos;
     n = julia(Z);
-    OutColor = vec4(n + Color.r, n + Color.g, n + (80.0 + Color.b), 1);
-    ///OutColor = vec4(Color, 1);
+    OutColor = vec4(n / 0.30, n / 0.47, n / 0.8, 1);
   }
   `;
   let vs = loadShader(gl.VERTEX_SHADER, vs_txt),
@@ -111,7 +108,6 @@ export function shaderInit() {
   // Uniform data
   timeLoc = gl.getUniformLocation(prg, "Time");
   mouseLoc = gl.getUniformLocation(prg, "Mouse");
-  colorLoc = gl.getUniformLocation(prg, "Color");
   gl.useProgram(prg);
 }
 
@@ -166,7 +162,6 @@ export function render() {
     });
 
     gl.uniform3f(mouseLoc, mousePosX, mousePosY, MouseZ);
-    gl.uniform3f(colorLoc, color[0], color[1], color[2]);
   }
 
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -181,13 +176,6 @@ function fractalMove(event) {
     mousePosY += Y - OldMouseY;
     (OldMouseY = Y), (OldMouseX = X);
   }
-}
-
-export function colorUpdate( value ) {
-  color[0] = 100 + Number('0x' + col.value.slice(1,3));
-  color[1] = 100 + Number('0x' + col.value.slice(3,5));
-  color[2] = 100 + Number('0x' + col.value.slice(5,8));
-  console.log(typeof color[2], color[2])
 }
 
 console.log("Done.");

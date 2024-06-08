@@ -1,4 +1,5 @@
-import {vec3, mat4, matView} from './mth_def'
+import {vec3} from './mth_vec3'
+import {mat4, matView, matrFrustum} from './mth_mat4'
 
 class _cam {  
   Loc = vec3();     /* Camera location */
@@ -11,14 +12,14 @@ class _cam {
   MatrProj = mat4();   /* Projection matrix */
   MatrVP = mat4();     /* Stored (View * Proj) matrix */
 
-  FrameW; /* Frame size (in pixels) */
-  FrameH; /* Frame size (in pixels) */
+  FrameW = 0; /* Frame size (in pixels) */
+  FrameH = 0; /* Frame size (in pixels) */
 
-  Wp; 
-  Hp;          /* Project plane size */
-  ProjSize;    /* Project plane fit square */
-  ProjDist;    /* Distance to project plane from viewer (near) */
-  ProjFarClip; /* Distance to project for clip plane (far) */
+  Wp = 0; 
+  Hp = 0;          /* Project plane size */
+  ProjSize = 0;    /* Project plane fit square */
+  ProjDist = 0;    /* Distance to project plane from viewer (near) */
+  ProjFarClip = 0; /* Distance to project for clip plane (far) */
 
   set(Loc, At, Up) {
     this.matrView = matView(Loc, At, Up);
@@ -36,6 +37,7 @@ class _cam {
     this.At = At;
 
     this.MatrVP = this.matrView.mul(this.MatrProj);
+    return this;
   }
 
   // setting camera frame size function.
@@ -58,9 +60,9 @@ class _cam {
     this.MatrVP = this.matrView.mul(this.MatrProj);
   }
   // setting projection data function.
-  camSetSize( FrameW, FrameH )
+  setSize( FrameW, FrameH )
   {
-    this.FrameW = FrameW;
+      this.FrameW = FrameW;
     this.FrameH = FrameH;
     this.setProj(this.ProjSize, this.ProjDist, this.ProjFarClip);
   }
