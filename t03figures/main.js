@@ -47,22 +47,24 @@ class _getGL {
     this.camera.set(camLoc, vec3(0), camUp);
     this.camera.setProj(projSize, projDist, farClip);
     this.camera.setSize(frameW, frameH);
+    
   }
-  render() {
+  render(init, draw) {
     const anim = () => {
       this.gl.clearColor(0.30, 0.47, 0.80, 1);
   
       if (this.flag) {
         this.shd.apply(this);
         render(this);
-        this.cub.draw(matrRotateY(45 * window.t).mul(matrRotateX(30 * window.t)));
+        draw();
       } else {
         if (this.shd.id != null) {
           this.shd.apply(this);
           this.shd.updateShaderData(this)
+          init();
           this.prg = this.shd.id;
           this.flag = true;
-          this.cub = cube(1, this);
+          
         }
       }
       
@@ -127,10 +129,17 @@ function loadGL() {
 
 window.addEventListener("load", () => {
   let canv1 = getGL("glCanvas1");
-  //loadGL();
-
   let canv2 = getGL("glCanvas2");
-  canv1.render();
-  canv2.render();
+  canv1.prim = cube(1, canv1);
+  canv2.render(() => {
+    canv2.cube = cube(1, canv2);
+  }, () => {
+    canv2.cube.draw(matrRotateY(45 * window.t).mul(matrRotateX(30 * window.t)));
+  });
+  canv1.render( () => {
+    canv1.tetr = tetr(1, canv1);
+  }, () => {
+    canv1.tetr.draw(matrRotateY(45 * window.t).mul(matrRotateX(30 * window.t)));
+  })
 })
 

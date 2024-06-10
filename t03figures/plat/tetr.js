@@ -23,12 +23,6 @@ class _tetr {
     let p2 = vec3(size / 2, 0, sqr3 / 2 * size);
     let p3 = vec3(0, sqr3 * sqr2 * size / 3, sqr3 / 3 * size);
 
-    // let p0 = vec3(0, -sqr2 * sqr3 / 6,  -sqr3 / 2);
-    // let p1 = vec3(-1 / 2, -sqr2 * sqr3 / 6, sqr3 / 3);
-    // let p2 = vec3(1 / 2, -sqr2 * sqr3 / 6, sqr3 / 3);
-    // let p3 = vec3(0, sqr3 * sqr2 / 6, 0);
-
-
     for (i = 0; i < 12; i++) {
       V[i] = vertex();
     }
