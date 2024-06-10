@@ -55,7 +55,7 @@ class _vec3 {
 
   // normalizing vector3 function.
   normalize() {
-    let l = this.dot(this);
+    let l = this.len();
 
     if (l == 1 || l == 0) return this;
     return this.div(l);

@@ -1,5 +1,8 @@
 import { prim, vertex } from "./res/prim";
 import { vec3 } from "./mth/mth_vec3";
+import { matrRotateX, matrRotateY, matrRotateZ } from "./mth/mth_mat4";
+import { tetr } from "./plat/tetr";
+import { cube } from "./plat/cube";
 
 let timeLoc, rnd,
   mouseLoc,
@@ -12,30 +15,31 @@ let x = 0,
   OldMouseY;
 
 let IsMouseDown = false;
-let tetr;
+
+let tetrahedron, cub;
 
 // Main render frame function.
 export function render(rend) {
   rend.gl.clear(rend.gl.COLOR_BUFFER_BIT);
 
-  // Uniform data
-  timeLoc = rend.gl.getUniformLocation(rend.shd.id, "Time");
-  mouseLoc = rend.gl.getUniformLocation(rend.shd.id, "Mouse");
+  const date = new Date();
+  window.t =
+    date.getMinutes() * 60 +
+    date.getSeconds() +
+    date.getMilliseconds() / 1000;;
+  
 
-  if (timeLoc != -1) {
-    const date = new Date();
-    let t =
-      date.getMinutes() * 60 +
-      date.getSeconds() +
-      date.getMilliseconds() / 1000;
+  if (rend.shd.timeLoc != -1) {
+      rend.gl.uniform1f(rend.shd.timeLoc, window.t);
+  }
+  if (rend.shd.mouseLoc != -1) {
+    rend.gl.uniform3f(rend.shd.mouseLoc, mousePosX, mousePosY, MouseZ);
+  }
+  if (rend.shd.camDirLoc != -1)
+    rend.gl.uniform3f(rend.shd.camDirLoc, false, rend.camera.Dir.x, rend.camera.Dir.y, rend.camera.z);
 
-      rend.gl.uniform1f(timeLoc, t);
-  }
-  if (mouseLoc != -1) {
-    rend.gl.uniform3f(mouseLoc, mousePosX, mousePosY, MouseZ);
-  }
-  ///gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  tetr.draw();
+  //tetrahedron.draw(matrRotateY(t * 75).mul(matrRotateX(t * 30)));
+  //cub.draw(matrRotateY(t * 75).mul(matrRotateX(t * 30)));
   
 } /* End of 'render' finction */
 
@@ -69,26 +73,6 @@ export function renderInit(render) {
   rnd.canvas.addEventListener("mousewheel", (event) => {
     MouseZ += event.wheelDelta / 40000;
   });
-
-  let V = [], ind=  [];
-  V[0] = vertex();
-  V[1] = vertex();
-  V[2] = vertex();
-  V[3] = vertex();
-  V[0].pos = vec3(-1, 1, 0);
-  V[1].pos = vec3(-1, -1, 0);
-  V[2].pos = vec3(1, 1, 0);
-  V[3].pos = vec3(1, -1, 0);
-  V[0].n = vec3(0, 0, 1);
-  V[1].n = vec3(0, 0, 1);
-  V[2].n = vec3(0, 0, 1);
-  V[3].n = vec3(0, 0, 1);
-
-  ind[0] = 0;
-  ind[1] = 0;
-  ind[2] = 0;
-  ind[3] = 0;
-  tetr = prim(V, 4, ind, 4, rnd.gl.TRIANGLE_STRIP);
 }
 
 console.log("Done.");

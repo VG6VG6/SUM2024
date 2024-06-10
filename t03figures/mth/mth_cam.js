@@ -62,7 +62,7 @@ class _cam {
   // setting projection data function.
   setSize( FrameW, FrameH )
   {
-      this.FrameW = FrameW;
+    this.FrameW = FrameW;
     this.FrameH = FrameH;
     this.setProj(this.ProjSize, this.ProjDist, this.ProjFarClip);
   }

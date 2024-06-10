@@ -1,8 +1,18 @@
-import { vec3 , mat4, cam, matView } from "./mth/mth_def";
+import { vec3 , mat4, cam, matView, matrRotateY, matrRotateX } from "./mth/mth_def";
 import {render, renderInit} from "./mylib"
 import { Timer } from "./res/timer";
 import { shader } from "./res/shader";
 import { initPrim1 } from "./res/prim";
+import { tetr } from "./plat/tetr";
+import { cube } from "./plat/cube";
+
+const frameW = 300;
+const frameH = 300;
+const camUp = vec3(0, 1, 0);
+const projDist = 0.1;
+const projSize = 0.1;
+const farClip = 300;
+const camLoc = vec3(0, 0.5, 2);
 
 // GL context
 let camera, flag;
@@ -16,12 +26,65 @@ class rend {
   worldLoc;
 }
 
+class _getGL {
+  constructor(canvasName) {
+    this.canvas = document.querySelector("#" + canvasName); 
+    this.gl = this.canvas.getContext("webgl2");
+  
+    this.gl.enable(this.gl.DEPTH_TEST)
+    if (this.gl == null) {
+      alert("WebGL2 not supported");
+      return null;
+    }
+    this.gl.clearColor(0.3, 0.47, 0.8, 1);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+
+    this.shd = shader("def", this);
+    this.flag = false;
+
+    /* Set camera*/
+    this.camera = cam();
+    this.camera.set(camLoc, vec3(0), camUp);
+    this.camera.setProj(projSize, projDist, farClip);
+    this.camera.setSize(frameW, frameH);
+  }
+  render() {
+    const anim = () => {
+      this.gl.clearColor(0.30, 0.47, 0.80, 1);
+  
+      if (this.flag) {
+        this.shd.apply(this);
+        render(this);
+        this.cub.draw(matrRotateY(45 * window.t).mul(matrRotateX(30 * window.t)));
+      } else {
+        if (this.shd.id != null) {
+          this.shd.apply(this);
+          this.shd.updateShaderData(this)
+          this.prg = this.shd.id;
+          this.flag = true;
+          this.cub = cube(1, this);
+        }
+      }
+      
+      window.requestAnimationFrame(anim);
+    }
+    anim();
+  }
+}
+
+function getGL(...args) {
+  return new _getGL(...args);
+}
+
 // load GL function
 function loadGL() {
   let rnd = new rend();
+  let tetrahedron;
+
   rnd.canvas = document.querySelector("#glCanvas"); 
   rnd.gl = rnd.canvas.getContext("webgl2");
 
+  rnd.gl.enable(rnd.gl.DEPTH_TEST);
   if (rnd.gl == null) {
     alert("WebGL2 not supported");
     return;
@@ -34,51 +97,26 @@ function loadGL() {
   flag = false;
   
   rnd.camera = cam();
-  rnd.camera.setSize(600, 600);
-  // camera.FrameH = 600;
-  // camera.FrameW = 600;
-  rnd.camera.setProj(0.1, 0.1, 300);
-  rnd.camera.set(vec3(0, 10, 10), vec3(0), vec3(0, 1, 0));
+  rnd.camera.set(vec3(0, 0.5, 2), vec3(0, 0, 0), camUp);
+  rnd.camera.setProj(projSize, projDist, farClip);
+  rnd.camera.setSize(frameW, frameH);
 
   const anim = () => {
-    rnd.gl.clearColor(1, 0, 0, 1);
+    rnd.gl.clearColor(0.30, 0.47, 0.80, 1);
 
     if (flag) {
+      rnd.shd.apply(rnd);
       render(rnd);
+      tetrahedron.draw(matrRotateY(45 * window.t).mul(matrRotateX(30 * window.t)));
     } else {
       if (rnd.shd.id != null) {
-        // shd.apply();
-        // // Vertex buffer creation
-        // const size = 0.99;
-        // const vertexes = [
-        //   -size,
-        //   size,
-        //   0,
-        //   -size,
-        //   -size,
-        //   0,
-        //   size,
-        //   size,
-        //   0,
-        //   size,
-        //   -size,
-        //   0,
-        // ];
-        // const posLoc = gl.getAttribLocation(shd.id, "InPosition");
-        // let vertexArray = gl.createVertexArray();
-        // gl.bindVertexArray(vertexArray);
-        // let vertexBufer = gl.createBuffer();
-        // gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufer);
-        // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexes), gl.STATIC_DRAW);
-        // if (posLoc != -1) {
-        //   gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
-        //   gl.enableVertexAttribArray(posLoc);
-        // }
-        initPrim1(rnd);
-        renderInit(rnd);
-        rnd.shd.updateShaderData()
+        rnd.shd.apply(rnd);
+        rnd.shd.updateShaderData(rnd);
+
+        rnd.shd.updateShaderData(rnd)
         rnd.prg = rnd.shd.id;
         flag = true;
+        tetrahedron = tetr(1, rnd);
       }
     }
     
@@ -88,6 +126,11 @@ function loadGL() {
 }
 
 window.addEventListener("load", () => {
-  loadGL();
+  let canv1 = getGL("glCanvas1");
+  //loadGL();
+
+  let canv2 = getGL("glCanvas2");
+  canv1.render();
+  canv2.render();
 })
 

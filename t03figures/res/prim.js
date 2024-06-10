@@ -1,8 +1,6 @@
 import { vec3, mat4 } from "../mth/mth_def";
 import { cam } from "../mth/mth_cam";
 
-let rnd;
-
 class _vertex {
   pos = vec3();
   n = vec3();
@@ -14,23 +12,14 @@ export function vertex(...args) {
 
 class _prim {
   type;
-  VA;
-  Vbuf; 
-  IBuf;
-  NumOfElements;
-  minBB = vec3();
-  maxBB = vec3();
   trans = mat4();
 
-  constructor(V, noofV, Ind, noofI, type) {
-    this.VA = 0;
-    this.Vbuf = 0;
-    this.IBuf = 0;
-    this.NumOfElements = 0;
-    this.VA = 0;
+  constructor(V, index, rnd) {
+    this.numOfElements = 0;
     let pnts = [], i = 0;
 
-    
+    autoNormals(V, index);
+
     for (let elem of V) {
       pnts[i++] = elem.pos.x;
       pnts[i++] = elem.pos.y;
@@ -40,8 +29,7 @@ class _prim {
       pnts[i++] = elem.n.z;
     }
  
-    const posLoc = rnd.gl.getAttribLocation(rnd.shd.id, "InPosition");
-    const posN = rnd.gl.getAttribLocation(rnd.shd.id, "InNormal");
+
 
     this.vertexArray = rnd.gl.createVertexArray();
     rnd.gl.bindVertexArray(this.vertexArray);
@@ -49,70 +37,63 @@ class _prim {
     rnd.gl.bindBuffer(rnd.gl.ARRAY_BUFFER, this.vertexBufer);
 
     rnd.gl.bufferData(rnd.gl.ARRAY_BUFFER, new Float32Array(pnts), rnd.gl.STATIC_DRAW);
-    if (posLoc != -1) {
-      rnd.gl.vertexAttribPointer(posLoc, 3, rnd.gl.FLOAT, false, 24, 0);
-      rnd.gl.enableVertexAttribArray(posLoc);
+    if (rnd.shd.posLoc != -1) {
+      rnd.gl.vertexAttribPointer(rnd.shd.posLoc, 3, rnd.gl.FLOAT, false, 24, 0);
+      rnd.gl.enableVertexAttribArray(rnd.shd.posLoc);
     }
-    if (posN != -1) {
-      rnd.gl.vertexAttribPointer(posN, 3, rnd.gl.FLOAT, false, 24, 12);
-      rnd.gl.enableVertexAttribArray(posN);
+    if (rnd.shd.posN != -1) {
+      rnd.gl.vertexAttribPointer(rnd.shd.posN, 3, rnd.gl.FLOAT, false, 24, 12);
+      rnd.gl.enableVertexAttribArray(rnd.shd.posN);
     }
     this.indexArray = rnd.gl.createBuffer()
     rnd.gl.bindBuffer(rnd.gl.ELEMENT_ARRAY_BUFFER, this.indexArray);
-    rnd.gl.bufferData(rnd.gl.ELEMENT_ARRAY_BUFFER, 4 * noofI, rnd.gl.STATIC_DRAW);
+    rnd.gl.bufferData(rnd.gl.ELEMENT_ARRAY_BUFFER, new Float32Array([].concat(...index)), rnd.gl.STATIC_DRAW);
     // rnd.gl.bindBuffer(rnd.gl.ELEMENT_ARRAY_BUFFER, 0);
-    this.NumOfElements = noofI;
-    this.type = type;
+    this.numOfElements = index.length;
+    this.rnd = rnd;
   }
-  draw( world ) {
-    if (world == undefined)
-      world = mat4();
-    this.world = this.trans.mul(world);
-    ///this.wnormal = this.world.inverse(transponse());
-    this.wvp = this.world.mul(rnd.camera.MatrVP);
+  draw( w ) {
+    if (w == undefined)
+      w = mat4();
+    this.world = this.trans.mul(w);
 
-    // prg = prg;
-    ///rnd.gl.useProgram(prg);
-
-    rnd.gl.bindVertexArray(this.vertexArray);
-    rnd.gl.bindBuffer(rnd.gl.ELEMENT_ARRAY_BUFFER, this.indexArray);
-
-    rnd.worldLoc = rnd.gl.getUniformLocation(rnd.shd.id, "WVP");
-    if (rnd.worldLoc != -1)
-      rnd.gl.uniformMatrix4fv(rnd.worldLoc, false, new Float32Array(this.wvp.m));
-
-    ///rnd.gl.drawElements(this.type, this.NumOfElements, rnd.gl.UNSIGNED_INT, 0);
-    rnd.gl.drawArrays(rnd.gl.TRIANGLE_STRIP, 0, this.NumOfElements);
+    this.rnd.gl.bindVertexArray(this.vertexArray);
+    this.rnd.gl.bindBuffer(this.rnd.gl.ELEMENT_ARRAY_BUFFER, this.indexArray);
     
-    // glUseProgram(0);
+    if (this.rnd.shd.worldLoc != -1)
+      this.rnd.gl.uniformMatrix4fv(this.rnd.shd.worldLoc, false, new Float32Array([].concat(...this.world.m)));
+    if (this.rnd.shd.VPLoc != -1)
+      this.rnd.gl.uniformMatrix4fv(this.rnd.shd.VPLoc, false, new Float32Array([].concat(...this.rnd.camera.MatrVP.m)));
+
+    this.rnd.gl.drawArrays(this.rnd.gl.TRIANGLES, 0, this.numOfElements);
   }
 }
 
-export function autoNormals(V, noofV, I, noofI) {
+export function autoNormals(vertexes, index) {
   let i;
  
   /* Set all vertex normals to zero */
-  for (i = 0; i < noofV; i++)
-    V[i].n = vec3(0);
+  for (i = 0; i < vertexes.length; i++)
+    vertexes[i].n = vec3(0);
  
   /* Eval normal for every facet */
-  for (i = 0; i < noofI; i += 3) {
+  for (i = 0; i < index.length; i += 3) {
     let
-      n0 = I[i], n1 = I[i + 1], n2 = I[i + 2];
+      n0 = index[i], n1 = index[i + 1], n2 = index[i + 2];
     let
-      p0 = V[n0].pos,
-      p1 = V[n1].pos,
-      p2 = V[n2].pos,
-      N = (p1.sub(p0)).cross(p2.sub(p0)).normalize();
+      p0 = vertexes[n0].pos,
+      p1 = vertexes[n1].pos,
+      p2 = vertexes[n2].pos,
+      N = p1.sub(p0).cross(p2.sub(p0)).normalize();
  
-    V[n0].n = V[n0].n.add(N);
-    V[n1].n = V[n1].n.add(N);
-    V[n2].n = V[n2].n.add(N);
+    vertexes[n0].n = vertexes[n0].n.add(N);
+    vertexes[n1].n = vertexes[n1].n.add(N);
+    vertexes[n2].n = vertexes[n2].n.add(N);
   }
  
   /* Normalize all vertex normals */
-  for (i = 0; i < noofV; i++)
-    V[i].n = V[i].n.normalize();
+  for (i = 0; i < vertexes.length; i++)
+    vertexes[i].n = vertexes[i].n.normalize();
 } // end of 'autoNormals' function
 
 export function prim(...args) {
@@ -122,4 +103,5 @@ export function prim(...args) {
 export function initPrim1(render) {
   rnd = render;
   rnd.id = rnd.shd.id;
+  
 }

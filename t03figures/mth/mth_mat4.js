@@ -1,3 +1,5 @@
+import { D2R } from "./mth_def";
+
 class _mat4 {
   constructor (m = null) {
     if (m == null || m == undefined) {
@@ -7,12 +9,6 @@ class _mat4 {
     } else {
     this.m = m.m;
     }
-  }
-  
-  // translating matrix by vector function.
-  translate(v) {
-    if (typeof(v) == 'number')
-      this.m = mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [v.x, v.y, v.z, 1]]);
   }
 
   // multyplying two matrixes function.
@@ -262,6 +258,11 @@ export function matView( Loc, At, Up1 ) {
       [-Loc.dot(Right), -Loc.dot(Up), Loc.dot(Dir), 1]]);
 
   return m;
+}
+
+// translating matrix by vector function.
+export function matrTranslate(v) {
+    return mat4([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [v.x, v.y, v.z, 1]]);
 }
 
 export function mat4(...args) {
