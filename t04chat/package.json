@@ -1,11 +1,13 @@
 {
   "dependencies": {
     "@rollup/plugin-babel": "^6.0.4",
+    "express": "^4.19.2",
     "hammerjs": "^2.0.8",
     "http-server": "^14.1.1",
     "rollup": "^4.18.0",
     "terser": "^5.31.1",
-    "tweakpane": "^4.0.3"
+    "tweakpane": "^4.0.3",
+    "ws": "^8.17.0"
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",

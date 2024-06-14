@@ -45,6 +45,13 @@ class _vec3 {
     return vec3(this.x * v.x, this.y * v.y, this.z * v.z);
   }
 
+  transform(m) {
+    if (m == undefined)
+      return this;
+    return vec3((this.x * m.m[0][0] + this.y * m.m[1][0] + this.z * m.m[2][0] + m.m[3][0],
+                 this.x * m.m[0][1] + this.y * m.m[1][1] + this.z * m.m[2][1] + m.m[3][1],
+                 this.x * m.m[0][2] + this.y * m.m[1][2] + this.z * m.m[2][2] + m.m[3][2]))
+  }
   // counting length of vector3 function
   len() {
     let l = this.dot(this);

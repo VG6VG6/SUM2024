@@ -1,4 +1,3 @@
-import { matrRotateY } from "../mth/mth_mat4";
 import { vertex } from "../res/prim";
 import { prim } from "../res/prim";
 import { vec3 } from "../mth/mth_def";

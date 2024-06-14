@@ -4,7 +4,7 @@ export default {
     input: "src/main.js",
     output: {
         dir: "output",
-        format: "cjs",
+        format: "iife",
         sourcemap: "inline"
     },
     plugins: [terser()],

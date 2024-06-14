@@ -1,5 +1,5 @@
 // Timer class constructor function
-export function Timer() {
+export function timer() {
   // Timer obtain current time in seconds method
   const getTime = () => {
     const date = new Date();

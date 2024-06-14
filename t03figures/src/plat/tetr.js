@@ -1,7 +1,6 @@
-import { matrRotateY, matrTranslate } from "../mth/mth_mat4";
+import { vec3, mat4 } from "../mth/mth_def";
 import { vertex } from "../res/prim";
 import { prim } from "../res/prim";
-import { vec3 } from "../mth/mth_def";
 
 class _tetr {
   constructor(size, rnd) {
@@ -27,8 +26,8 @@ class _tetr {
       V[i] = vertex();
     }
 
-    V[0].pos = p0;
-    V[1].pos = p1;
+    V[0].pos = p1;
+    V[1].pos = p0;
     V[2].pos = p2;
 
     V[3].pos = p3;
@@ -48,7 +47,7 @@ class _tetr {
       this.ind[i] = i;
   
     this.primmitive = prim(V, this.ind, rnd);
-    this.primmitive.trans = matrTranslate(vec3(0, -sqr3 * sqr2 * size / 6, -sqr2 / 3 * size))
+    this.primmitive.trans = mat4.matrTranslate(vec3(0, -sqr3 * sqr2 * size / 6, -sqr2 / 3 * size))
   }
 
   draw(matr) {

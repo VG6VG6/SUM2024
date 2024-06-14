@@ -1,5 +1,4 @@
-import { vec3, mat4 } from "../mth/mth_def";
-import { cam } from "../mth/mth_cam";
+import { vec3, mat4, cam } from "../mth/mth_def";
 
 class _vertex {
   pos = vec3();
@@ -29,8 +28,6 @@ class _prim {
       pnts[i++] = elem.n.z;
     }
  
-
-
     this.vertexArray = rnd.gl.createVertexArray();
     rnd.gl.bindVertexArray(this.vertexArray);
     this.vertexBufer = rnd.gl.createBuffer();
@@ -55,7 +52,10 @@ class _prim {
   draw( w ) {
     if (w == undefined)
       w = mat4();
+
     this.world = this.trans.mul(w);
+
+    updateUniforms(this.rnd);
 
     this.rnd.gl.bindVertexArray(this.vertexArray);
     this.rnd.gl.bindBuffer(this.rnd.gl.ELEMENT_ARRAY_BUFFER, this.indexArray);
@@ -66,6 +66,15 @@ class _prim {
       this.rnd.gl.uniformMatrix4fv(this.rnd.shd.VPLoc, false, new Float32Array([].concat(...this.rnd.camera.MatrVP.m)));
 
     this.rnd.gl.drawArrays(this.rnd.gl.TRIANGLES, 0, this.numOfElements);
+  }
+  setMtl(Mtl) {
+    
+  }
+}
+
+function updateUniforms(rnd) {
+  if (rnd.shd.camDirLoc != -1) {
+    rnd.gl.uniform3f(rnd.shd.camDirLoc, false, rnd.camera.Dir.x, rnd.camera.Dir.y, rnd.camera.Dir.z);
   }
 }
 
@@ -98,10 +107,4 @@ export function autoNormals(vertexes, index) {
 
 export function prim(...args) {
   return new _prim(...args);
-}
-
-export function initPrim1(render) {
-  rnd = render;
-  rnd.id = rnd.shd.id;
-  
 }
