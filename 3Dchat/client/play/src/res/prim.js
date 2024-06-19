@@ -5,6 +5,7 @@ let primsToLoad = []
 class _vertex {
   pos = vec3();
   n = vec3();
+  tex = vec3();
 }
 
 export function vertex(...args) {
@@ -28,6 +29,8 @@ class _prim {
       pnts[i++] = elem.n.x;
       pnts[i++] = elem.n.y;
       pnts[i++] = elem.n.z;
+      pnts[i++] = elem.tex.x;
+      pnts[i++] = elem.tex.y;
     }
  
     this.vertexArray = rnd.gl.createVertexArray();
@@ -35,45 +38,31 @@ class _prim {
     this.vertexBufer = rnd.gl.createBuffer();
     rnd.gl.bindBuffer(rnd.gl.ARRAY_BUFFER, this.vertexBufer);
 
-    if (rnd.shd.id == null) {
-      this.primLoad = false;
-      this.rnd = rnd;
-      this.ind = index;
-      this.points = pnts;
-    } else {
-      rnd.gl.bufferData(rnd.gl.ARRAY_BUFFER, new Float32Array(pnts), rnd.gl.STATIC_DRAW);
-
-      if (rnd.shd.posLoc != -1) {
-        rnd.gl.vertexAttribPointer(rnd.shd.posLoc, 3, rnd.gl.FLOAT, false, 24, 0);
-        rnd.gl.enableVertexAttribArray(rnd.shd.posLoc);
-      }
-      if (rnd.shd.posN != -1) {
-        rnd.gl.vertexAttribPointer(rnd.shd.posN, 3, rnd.gl.FLOAT, false, 24, 12);
-        rnd.gl.enableVertexAttribArray(rnd.shd.posN);
-      }
-      this.indexArray = rnd.gl.createBuffer()
-      rnd.gl.bindBuffer(rnd.gl.ELEMENT_ARRAY_BUFFER, this.indexArray);
-      rnd.gl.bufferData(rnd.gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(index), rnd.gl.STATIC_DRAW);
-      
-      this.numOfElements = index.length;
-      this.rnd = rnd;
-      this.primLoad = true;
-    }
+    this.primLoad = false;
+    this.rnd = rnd;
+    this.ind = index;
+    this.points = pnts;
   }
   draw( w ) {
     if (w == undefined)
       w = mat4();
 
+    let shd = this.rnd.shd;
+    // load prim attribs
     if (!this.primLoad) {
       this.rnd.gl.bufferData(this.rnd.gl.ARRAY_BUFFER, new Float32Array(this.points), this.rnd.gl.STATIC_DRAW);
 
-      if (this.rnd.shd.posLoc != -1) {
-        this.rnd.gl.vertexAttribPointer(this.rnd.shd.posLoc, 3, this.rnd.gl.FLOAT, false, 24, 0);
-        this.rnd.gl.enableVertexAttribArray(this.rnd.shd.posLoc);
+      if (shd.attrs["InPosition"].loc != -1) {
+        this.rnd.gl.vertexAttribPointer(shd.attrs["InPosition"].loc, 3, this.rnd.gl.FLOAT, false, 32, 0);
+        this.rnd.gl.enableVertexAttribArray(shd.attrs["InPosition"].loc);
       }
-      if (this.rnd.shd.posN != -1) {
-        this.rnd.gl.vertexAttribPointer(this.rnd.shd.posN, 3, this.rnd.gl.FLOAT, false, 24, 12);
-        this.rnd.gl.enableVertexAttribArray(this.rnd.shd.posN);
+      if (shd.attrs["InNormal"].loc != -1) {
+        this.rnd.gl.vertexAttribPointer(shd.attrs["InNormal"].loc, 3, this.rnd.gl.FLOAT, false, 32, 12);
+        this.rnd.gl.enableVertexAttribArray(shd.attrs["InNormal"].loc);
+      }
+      if (shd.attrs["InTexCoord"].loc != -1) {
+        this.rnd.gl.vertexAttribPointer(shd.attrs["InTexCoord"].loc, 3, this.rnd.gl.FLOAT, false, 32, 24);
+        this.rnd.gl.enableVertexAttribArray(shd.attrs["InTexCoord"].loc);
       }
       this.indexArray = this.rnd.gl.createBuffer()
       this.rnd.gl.bindBuffer(this.rnd.gl.ELEMENT_ARRAY_BUFFER, this.indexArray);
@@ -82,20 +71,44 @@ class _prim {
       this.numOfElements = this.ind.length;
       this.primLoad = true;
     }
-
     this.world = this.trans.mul(w);
 
     this.rnd.gl.bindVertexArray(this.vertexArray);
     this.rnd.gl.bindBuffer(this.rnd.gl.ELEMENT_ARRAY_BUFFER, this.indexArray);
     this.rnd.gl.bindBuffer(this.rnd.gl.ARRAY_BUFFER, this.vertexBufer);
 
-    if (this.rnd.shd.camDirLoc != -1)
-      this.rnd.gl.uniform3f(this.rnd.shd.camDirLoc, false, this.rnd.camera.Dir.x, this.rnd.camera.Dir.y, this.rnd.camera.Dir.z);
-    if (this.rnd.shd.worldLoc != -1)
-      this.rnd.gl.uniformMatrix4fv(this.rnd.shd.worldLoc, false, new Float32Array([].concat(...this.world.m)));
-    if (this.rnd.shd.VPLoc != -1)
-      this.rnd.gl.uniformMatrix4fv(this.rnd.shd.VPLoc, false, new Float32Array([].concat(...this.rnd.camera.MatrVP.m)));
+    // update uniforms
+    if (shd.uniforms["CamDir"].loc != -1)
+      this.rnd.gl.uniform3f(shd.uniforms["CamDir"].loc, false, this.rnd.camera.Dir.x, this.rnd.camera.Dir.y, this.rnd.camera.Dir.z);
+    if (shd.uniforms["CamLoc"])
+      if (shd.uniforms["CamLoc"].loc != -1)
+        this.rnd.gl.uniform3f(shd.uniforms["CamLoc"].loc, false, this.rnd.camera.Loc.x, this.rnd.camera.Loc.y, this.rnd.camera.Loc.z);
+    if (shd.uniforms["World"].loc != -1)
+      this.rnd.gl.uniformMatrix4fv(shd.uniforms["World"].loc, false, new Float32Array([].concat(...this.world.m)));
+    if (shd.uniforms["VP"].loc != -1)
+      this.rnd.gl.uniformMatrix4fv(shd.uniforms["VP"].loc, false, new Float32Array([].concat(...this.rnd.camera.MatrVP.m)));
 
+    // update material
+    if (this.mtl) {
+      let mtlUBO = []
+        mtlUBO.push(this.mtl.ka.x)
+        mtlUBO.push(this.mtl.ka.y)
+        mtlUBO.push(this.mtl.ka.z)
+        mtlUBO.push(0)
+        mtlUBO.push(this.mtl.kd.x)
+        mtlUBO.push(this.mtl.kd.y)
+        mtlUBO.push(this.mtl.kd.z)
+        mtlUBO.push(0)
+        mtlUBO.push(this.mtl.ks.x)
+        mtlUBO.push(this.mtl.ks.y)
+        mtlUBO.push(this.mtl.ks.z)
+        mtlUBO.push(this.mtl.ph)
+        for (let i = 0; i < 8; i++)
+          mtlUBO.push(this.mtl.isTex[i]);
+        this.rnd.shd.ubo.update(new Float32Array(mtlUBO));
+        this.mtl.apply(this.rnd);
+    }
+      
     
     if (this.numOfElements > 0)
       this.rnd.gl.drawElements(this.rnd.gl.TRIANGLES, this.numOfElements, this.rnd.gl.UNSIGNED_INT, 0);

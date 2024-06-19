@@ -55,17 +55,47 @@ class _shader {
     }                                            
     this.updateShaderData(rnd);    
   } 
-  updateShaderData(rnd) {
-    // Shader attributes
-    rnd.shd.posLoc = rnd.gl.getAttribLocation(rnd.shd.id, "InPosition");
-    rnd.shd.posN = rnd.gl.getAttribLocation(rnd.shd.id, "InNormal");
-
-    // Uniform data
-    rnd.shd.timeLoc = rnd.gl.getUniformLocation(rnd.shd.id, "Time");
-    rnd.shd.mouseLoc = rnd.gl.getUniformLocation(rnd.shd.id, "Mouse");
-    rnd.shd.camDirLoc = rnd.gl.getUniformLocation(rnd.shd.id, "CamDir");
-    rnd.shd.worldLoc = rnd.gl.getUniformLocation(rnd.shd.id, "World");
-    rnd.shd.VPLoc = rnd.gl.getUniformLocation(rnd.shd.id, "VP");
+    updateShaderData(rnd) {
+      let gl = rnd.gl;
+      // Shader attributes
+      this.attrs = {};
+      const countAttrs = gl.getProgramParameter(this.id, gl.ACTIVE_ATTRIBUTES);
+      for (let i = 0; i < countAttrs; i++) {
+        const info = gl.getActiveAttrib(this.id, i);
+        this.attrs[info.name] = {
+          name: info.name,
+          type: info.type,
+          size: info.size,
+          loc: gl.getAttribLocation(this.id, info.name),
+        };
+      }
+   
+      // Shader uniforms
+      this.uniforms = {};
+      const countUniforms = gl.getProgramParameter(this.id, gl.ACTIVE_UNIFORMS);
+      for (let i = 0; i < countUniforms; i++) {
+        const info = gl.getActiveUniform(this.id, i);
+        this.uniforms[info.name] = {
+          name: info.name,
+          type: info.type,
+          size: info.size,
+          loc: gl.getUniformLocation(this.id, info.name),
+        };
+      }
+   
+      // Shader uniform blocks
+      this.uniformBlocks = {};
+      const countUniformBlocks = gl.getProgramParameter(this.id, gl.ACTIVE_UNIFORM_BLOCKS);
+      for (let i = 0; i < countUniformBlocks; i++) {
+        const block_name = gl.getActiveUniformBlockName(this.id, i);
+        const index = gl.getActiveUniformBlockName(this.id, i);
+        this.uniformBlocks[block_name] = {
+          name: block_name,
+          index: index,
+          size: gl.getActiveUniformBlockParameter(this.id, index, gl.UNIFORM_BLOCK_DATA_SIZE),
+          bind: gl.getActiveUniformBlockParameter(this.id, index, gl.UNIFORM_BLOCK_BINDING),
+        };
+      }
   }
   constructor(name, render) {
     this._init(name, render)

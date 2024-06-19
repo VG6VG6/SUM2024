@@ -1,6 +1,8 @@
 import { vertex } from "../res/prim";
 import { prim } from "../res/prim";
 import { vec3 } from "../mth/mth_def";
+import { mtl } from "../res/materials";
+import { img, texture } from "../res/textures";
 
 class _cube {
   constructor(size, rnd) {
@@ -24,14 +26,21 @@ class _cube {
     
     for (i = 0; i < 48; i++) {
       V[i] = vertex();
+      V[i].tex = vec3(0);
     }
     i = 0;
+    V[i].tex = vec3(1, 0, 0);
     V[i++].pos = p02;
+    V[i].tex = vec3(0, 0, 0);
     V[i++].pos = p01;
+    V[i].tex = vec3(0, 1, 0);
     V[i++].pos = p03;
 
+    V[i].tex = vec3(0, 1, 0);
     V[i++].pos = p03;
+    V[i].tex = vec3(0, 0, 0);
     V[i++].pos = p01;
+    V[i].tex = vec3(1, 1, 0);
     V[i++].pos = p04;
 
     V[i++].pos = p01;
@@ -79,6 +88,7 @@ class _cube {
       this.ind[k] = k;
     
     this.primmitive = prim(V, this.ind, rnd)
+    // this.primmitive.mtl.
   }
 
   draw(matr) {

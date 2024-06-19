@@ -1,5 +1,5 @@
 import { vec3 } from "../mth/mth_vec3";
-
+import { ubo_buffer } from "./buffer";
 const mtlLib = [];
   
 mtlLib.push({"name": "Black Plastic",   "Ka": vec3(0.0, 0.0, 0.0),             "Kd": vec3(0.01, 0.01, 0.01),           "Ks": vec3(0.5, 0.5, 0.5),              "Ph": 32});
@@ -23,17 +23,61 @@ mtlLib.push({"name": "Emerald",         "Ka": vec3(0.0215, 0.1745, 0.0215),    "
 mtlLib.push({"name": "Black Rubber",    "Ka": vec3(0.02, 0.02, 0.02),          "Kd": vec3(0.01, 0.01, 0.01),           "Ks": vec3(0.4, 0.4, 0.4),                "Ph": 10.0});
 
 class _mtl {
-  constructor(Name, Ka, Kd, Ks, Ph) {
-    return
-  }
-  static getMtlByName(name) {
-    for (let e of mtlLib)
-      if (e.name == name)
-        return e;
-    return;
-  }
-}
+  constructor(name, ka, kd, ks, ph, rnd) {
+    this.tex = [];
+    this.isTex = [];
 
+    this.name = name
+    this.ka = ka
+    this.kd = kd
+    this.ks = ks
+    this.ph = ph
+    for (let i = 0; i < 8; i++) {
+      this.tex[i] = null;
+      this.isTex[i] = 0;
+    }
+  }
+  apply(rnd) {
+    if (rnd.shd.id == null)
+      return;
+    rnd.shd.apply(rnd);
+    rnd.shd.ubo.apply(rnd.shd);
+    for (let t = 0; t < this.tex.length; t++)
+      if (this.tex[t] != null)
+        this.tex[t].apply(rnd, t);
+  }
+  textureAttach(tex, ind) {
+    if (ind > 0 || ind > 8 || !tex)
+      return;
+
+    this.tex[ind] = tex;
+    this.isTex[ind] = 1;
+    
+    // rnd.shd.ubo.update(...);   !!!
+  }
+  static getFromLib(name, rnd) {
+    for (let i = 0; i < mtlLib.length; i++)
+      if (mtlLib[i].name == name) {
+        return mtlLib[i].mtl;
+      }
+      this.ka = 0.30
+      this.kd = 0.47
+      this.ks = 0.80
+      this.ph = 30
+  }
+  static init(rnd) {
+    rnd.shd.ubo = ubo_buffer("Material", rnd.shd.uniformBlocks["Material"].size, rnd.shd.uniformBlocks["Material"].bind, rnd);
+
+  }
+  static loadLib(rnd) {
+    for (let i = 0; i < mtlLib.length; i++)
+      mtlLib[i].mtl = new _mtl(mtlLib[i].name, mtlLib[i].Ka, mtlLib[i].Kd, mtlLib[i].Ks, mtlLib[i].Ph, rnd);
+  }
+
+}
+mtl.getFromLib = (...args) => {return _mtl.getFromLib(...args)};
+mtl.init = (...args) => {return _mtl.init(...args)};
+mtl.loadLib = (...args) => {return _mtl.loadLib(...args)};
 
 export function mtl(...args) {
   return _mtl(...agrs)

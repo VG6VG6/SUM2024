@@ -2,6 +2,7 @@ import {mat4} from "./mth/mth_def"
 import { timer } from "./res/timer";
 import { shader } from "./res/shader";
 import { unit } from "./units/unitsList";
+import { mtl } from "./res/materials";
 
 class _rend {
   prims = []
@@ -27,6 +28,7 @@ class _rend {
     this.camera = cam;
     this.timer = new timer();
 
+    mtl.loadLib(this);
   }
   resize(cam) {
     this.camera = cam;
@@ -47,6 +49,8 @@ class _rend {
           this.shd.apply(this);
           this.shd.updateShaderData(this);
           this.flag = true;
+          mtl.init(this);
+          this.shd.ubo.apply(this.shd)
         }
       window.requestAnimationFrame(anim);
     }
@@ -67,7 +71,7 @@ class _rend {
       if (event.code == "p" && event.shiftKey)
         rnd.timer.isPause = !rnd.timer.isPause;
     })
-
+    this.isMove = true;
     this.Mdz = 0;
     this.Mdy = 0;
     this.Mdx = 0;
