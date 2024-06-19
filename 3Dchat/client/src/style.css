@@ -1,0 +1,42 @@
+body::-webkit-scrollbar
+{
+  display: none;
+}
+#regCanvas {
+  border: 1px red, solid;
+}
+
+#regText {
+  text-decoration: none;
+  font-size: 30px;
+  text-align: center;
+  text-shadow: 0 1px 0 #003CC5;
+}
+
+#regName {
+  font-size: 30px;
+  border: 1px #003CC5 solid;
+  border-radius: 10px;
+  text-decoration: none;
+  color: white;
+  background: #0B63F6;
+}
+
+#regButton {
+  width: 50%;
+  margin-top: 5%;
+  margin-left: 20%;
+  border: none;
+  border-radius: 10px;
+  text-decoration: none;
+  color: white;
+  background: #0B63F6;
+  box-shadow: 0 5px 0 #003CC5;
+}
+
+.regButton:hover {
+  background: #003CC5;
+  box-shadow: none;
+  position: relative;
+  top: 5px;
+}

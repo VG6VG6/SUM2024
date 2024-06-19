@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "express": "^4.19.2",
+    "hammerjs": "^2.0.8",
+    "mongodb": "^6.7.0",
+    "rollup": "^4.18.0",
+    "three": "^0.165.0",
+    "ws": "^8.17.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4"
+  },
+  "type": "module"
+}
