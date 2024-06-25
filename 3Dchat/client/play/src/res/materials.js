@@ -24,6 +24,9 @@ mtlLib.push({"name": "Black Rubber",    "Ka": vec3(0.02, 0.02, 0.02),          "
 
 class _mtl {
   constructor(name, ka, kd, ks, ph, rnd) {
+    if (name == undefined) {
+      return new _mtl("def", vec3(0.30), vec3(0.47), vec3(0.80), 1, rnd);
+    }
     this.tex = [];
     this.isTex = [];
 
@@ -37,17 +40,17 @@ class _mtl {
       this.isTex[i] = 0;
     }
   }
-  apply(rnd) {
-    if (rnd.shd.id == null)
+  apply(rnd, shd) {
+    if (shd.id == null)
       return;
-    rnd.shd.apply(rnd);
-    rnd.shd.ubo.apply(rnd.shd);
+    shd.apply(rnd);
+    shd.ubo.apply(shd);
     for (let t = 0; t < this.tex.length; t++)
       if (this.tex[t] != null)
         this.tex[t].apply(rnd, t);
   }
   textureAttach(tex, ind) {
-    if (ind > 0 || ind > 8 || !tex)
+    if (ind < 0 || ind > 8 || !tex)
       return;
 
     this.tex[ind] = tex;
@@ -58,15 +61,16 @@ class _mtl {
   static getFromLib(name, rnd) {
     for (let i = 0; i < mtlLib.length; i++)
       if (mtlLib[i].name == name) {
-        return mtlLib[i].mtl;
+        return new _mtl(mtlLib[i].mtl.name, mtlLib[i].mtl.ka, mtlLib[i].mtl.kd, mtlLib[i].mtl.ks, mtlLib[i].mtl.ps, rnd);
       }
-      this.ka = 0.30
-      this.kd = 0.47
-      this.ks = 0.80
-      this.ph = 30
+      return new _mtl("def", vec3(0.30), vec3(0.47), vec3(0.80), 30, rnd);
   }
   static init(rnd) {
-    rnd.shd.ubo = ubo_buffer("Material", rnd.shd.uniformBlocks["Material"].size, rnd.shd.uniformBlocks["Material"].bind, rnd);
+    for (let i = 0; i < rnd.shd.length; i++)
+      if (rnd.shd[i].uniformBlocks["Material"])
+        rnd.shd[i].ubo = ubo_buffer("Material", rnd.shd[i].uniformBlocks["Material"].size, rnd.shd[i].uniformBlocks["Material"].bind, rnd);
+      else
+      console.log("Material is not found")
 
   }
   static loadLib(rnd) {
@@ -80,5 +84,5 @@ mtl.init = (...args) => {return _mtl.init(...args)};
 mtl.loadLib = (...args) => {return _mtl.loadLib(...args)};
 
 export function mtl(...args) {
-  return _mtl(...agrs)
+  return new _mtl(...args)
 }

@@ -1,4 +1,5 @@
 #messageBox {
+  /* height: 650px; */
   overflow-y: auto;
   margin-top: 20px;
 }
@@ -6,14 +7,53 @@
 #chat2D {
   width: 400px;
   height: 700px;
-  background-color: aquamarine;
-  margin-left: auto;
-  /* margin-right: auto; */
+  background-color: rgba(17, 17, 17, 0.322);
+  right: 10px;
+  top: 20px;
   overflow-y: auto;
   border-radius: 15px;
+  position: absolute;
+  overflow-X: hidden;
 }
 
-#messageBox1::-webkit-scrollbar
+#chat {
+  min-height: 640px;
+}
+
+#toggleButtonOn:focuse {
+  outline: none;
+}
+#toggleButton {
+  height: 50px; 
+  top: 40px;
+  right: 410px;
+  position: absolute;
+  border-radius: 5px;
+  background-color: rgba(17, 17, 17, 0.651);
+}
+
+#toogleButtonOff {
+  height: 50px; 
+  top: 40px;
+  right: 5px;
+  position: absolute;
+  border-radius: 5px;
+  background-color: rgba(17, 17, 17, 0.651);
+}
+
+#myTextArea {
+  width: 80%;
+  height: 20px;
+  margin-top: 10px;
+  margin-left: 30px;
+  margin-right: auto;
+  background-color: rgba(17, 17, 17, 0.322);
+  border-radius: 5px;
+  color: white;
+  /* position: fixed; */
+}
+
+#chat2D::-webkit-scrollbar
 {
   display: none;
 }

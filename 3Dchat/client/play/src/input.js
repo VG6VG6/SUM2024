@@ -1,4 +1,4 @@
-import {camera, mat4, vec3} from "./mth/mth_def.js";
+import { vec3, mat4 } from "./mth/mth_def";
  
 const D2R = degrees => degrees * Math.PI / 180;
 const R2D = radians => radians * 180 / Math.PI;
@@ -14,6 +14,7 @@ export class input {
     rnd.canvas.addEventListener('mousewheel', (e) => this.onMouseWheel(e));
     rnd.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
     rnd.canvas.addEventListener('mouseup', (e) => this.onMouseUp(e));
+    rnd.canvas.addEventListener('mouseover', (e) => this.mDx = 0);
     rnd.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     if ('ontouchstart' in document.documentElement) {
       rnd.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e));
@@ -53,7 +54,7 @@ export class input {
       "ArrowDown", "Shift", "Control", "Alt", "ShiftLeft", "ShiftRight", "ControlLeft",
       "ControlRight", "PageUp", "PageDown", "End", "Home",
       "Digit0", "Digit1",
-      "KeyA",
+      "KeyA", "KeyW", "KeyS", "KeyD",
       "Numpad0", "NumpadMultiply",
       "F1",
     ].forEach(key => {
@@ -244,7 +245,7 @@ export class input {
  
   /// Keyboard handle
   onKeyDown(e) {
-    if (e.target.tagName.toLowerCase() == 'textarea')
+    if (e.target.tagName.toLowerCase() == 'textarea' || e.target.tagName.toLowerCase() == "input")
       return;
     let focused_element = null;
     if (document.hasFocus() &&
@@ -262,7 +263,7 @@ export class input {
     
     this.shiftKey = e.shiftKey;
     this.altKey = e.altKey;
-    this.ctrlKey = e.ctrlKey;
+    this.ctrlKey = e.ctrlKey; 
   } // End of 'onKeyDown' function
   
   onKeyUp(e) {
@@ -303,18 +304,18 @@ export class input {
           
   responseCamera(rnd) {
     if (this.shiftKey && this.keysClick["KeyF"]) {
-      rnd.cam.set(vec3(5), vec3(0), vec3(0, 1, 0));
+      rnd.camera.set(vec3(5), vec3(0), vec3(0, 1, 0));
       return;
     }
     /*if (this.ctrlKey)*/ {
       // Handle camera orientation
       let
-        Dist = vec3(rnd.cam.at).sub(rnd.cam.loc).len(),
-        cosT = (rnd.cam.loc.y - rnd.cam.at.y) / Dist,
+        Dist = vec3(rnd.camera.at).sub(rnd.camera.loc).len(),
+        cosT = (rnd.camera.loc.y - rnd.camera.at.y) / Dist,
         sinT = Math.sqrt(1 - cosT * cosT),
         plen = Dist * sinT,
-        cosP = (rnd.cam.loc.z - rnd.cam.at.z) / plen,
-        sinP = (rnd.cam.loc.x - rnd.cam.at.x) / plen,
+        cosP = (rnd.camera.loc.z - rnd.camera.at.z) / plen,
+        sinP = (rnd.camera.loc.x - rnd.camera.at.x) / plen,
         azimuth = R2D(Math.atan2(sinP, cosP)),
         elevator = R2D(Math.atan2(sinT, cosT));
  
@@ -338,26 +339,26 @@ export class input {
  
       /* Handle camera position */
       if (this.mButtons[2]) {
-        let Wp = rnd.cam.projSize;
-        let Hp = rnd.cam.projSize;
-        if (rnd.cam.frameW > rnd.cam.frameH)
-          Wp *= rnd.cam.frameW / rnd.cam.frameH;
+        let Wp = rnd.camera.projSize;
+        let Hp = rnd.camera.projSize;
+        if (rnd.camera.frameW > rnd.camera.frameH)
+          Wp *= rnd.camera.frameW / rnd.camera.frameH;
         else
-          Hp *= rnd.cam.frameH / rnd.cam.frameW;
-        let sx = -this.mDx * Wp / rnd.cam.frameW * Dist / rnd.cam.projDist;
-        let sy = this.mDy * Hp / rnd.cam.frameH * Dist / rnd.cam.projDist;
+          Hp *= rnd.camera.frameH / rnd.camera.frameW;
+        let sx = -this.mDx * Wp / rnd.camera.frameW * Dist / rnd.camera.projDist;
+        let sy = this.mDy * Hp / rnd.camera.frameH * Dist / rnd.camera.projDist;
  
-        let dv = rnd.cam.right.mul(sx).add(rnd.cam.up.mul(sy));
-        rnd.cam.at = rnd.cam.at.add(dv);
-        rnd.cam.loc = rnd.cam.loc.add(dv);
+        let dv = rnd.camera.right.mul(sx).add(rnd.camera.up.mul(sy));
+        rnd.camera.at = rnd.camera.at.add(dv);
+        rnd.camera.loc = rnd.camera.loc.add(dv);
       }
- 
-      /* Setup result camera */
-      rnd.cam.set(mat4().setRotate(elevator, vec3(1, 0, 0)).
-                        rotate(azimuth, vec3(0, 1, 0)).
-                        translate(rnd.cam.at).transformPoint(vec3(0, Dist, 0)),
-                 rnd.cam.at,
-                 vec3(0, 1, 0));
+
+      rnd.camera.set(vec3(0, Dist, 0).transform(
+                    mat4.matrRotateX(elevator).mul(
+                    mat4.matrRotateY(azimuth).mul(
+                    mat4.matrTranslate(rnd.camera.at)))),
+                rnd.camera.at,
+                vec3(0, 1, 0));
     }
   } // End of 'responseсCamera' function
 } // End of 'input' class

@@ -5,6 +5,7 @@ class _img {
     this.img.src = href;
   }
 }
+
 export function img(...args) {
   return new _img(...args);
 }

@@ -24,17 +24,17 @@ class _cam {
   set(Loc, At, Up) {
     this.matrView = mat4.matrView(Loc, At, Up);
   
-    this.Right = vec3(this.matrView.m[0][0],
+    this.right = vec3(this.matrView.m[0][0],
       this.matrView.m[1][0],
       this.matrView.m[2][0]);
-    this.Up = vec3(this.matrView.m[0][1],
+    this.up = vec3(this.matrView.m[0][1],
       this.matrView.m[1][1],
       this.matrView.m[2][1]);
-    this.Dir = vec3(-this.matrView.m[0][2],
+    this.dir = vec3(-this.matrView.m[0][2],
         -this.matrView.m[1][2],
         -this.matrView.m[2][2]);
-    this.Loc = Loc;
-    this.At = At;
+    this.loc = Loc;
+    this.at = At;
 
     this.MatrVP = this.matrView.mul(this.MatrProj);
     return this;

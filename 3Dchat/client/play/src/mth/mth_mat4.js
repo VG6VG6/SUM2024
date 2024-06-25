@@ -1,3 +1,4 @@
+import { vec3 } from "./mth_vec3";
 
 // Degree to Radian and back macro functions
 function D2R(D) {
@@ -178,6 +179,14 @@ class _mat4 {
       this.m[0][3], this.m[1][3], this.m[2][3], this.m[3][3]);
   }
 
+  transformPoint(v) {
+    if (v == undefined)
+      return vec3();
+    return vec3((v.x * this.m[0][0] + v.y * this.m[1][0] + v.z * this.m[2][0] + this.m[3][0],
+                 v.x * this.m[0][1] + v.y * this.m[1][1] + v.z * this.m[2][1] + this.m[3][1],
+                 v.x * this.m[0][2] + v.y * this.m[1][2] + v.z * this.m[2][2] + this.m[3][2]))
+  }
+
   // counting matrix(3*3) determination function.
   static matrDeterm3x3( A11, A12, A13,
                         A21, A22, A23,
@@ -297,4 +306,8 @@ mat4.matrRotateX = (...args) => {
 
 mat4.matrRotateZ = (...args) => {
   return _mat4.matrRotateZ(...args)
+}
+
+mat4.scale = (...args) => {
+  return _mat4.scale(...args);
 }

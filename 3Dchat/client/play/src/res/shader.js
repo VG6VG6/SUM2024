@@ -101,8 +101,8 @@ class _shader {
     this._init(name, render)
   }
   apply(rnd) {
-    if (rnd.shd.id != null)
-      rnd.gl.useProgram(rnd.shd.id);
+    if (this.id != null)
+      rnd.gl.useProgram(this.id);
   }
 }
 export function shader(name, render) {

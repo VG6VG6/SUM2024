@@ -1,6 +1,6 @@
 class _vec3 {
   constructor(x, y, z) {
-    if (x == undefined) (this.x = 0), this.x, (this.z = 0);
+    if (x == undefined) (this.x = 0), this.y = 0, (this.z = 0);
     else if (typeof x == "object")
       if (x.lenght == 3) (this.x = x[0]), (this.y = x[1]), (this.z = x[2]);
       else (this.x = x.x), (this.y = x.y), (this.z = x.z);
@@ -46,12 +46,16 @@ class _vec3 {
   }
 
   transform(m) {
-    if (m == undefined)
-      return this;
-    return vec3((this.x * m.m[0][0] + this.y * m.m[1][0] + this.z * m.m[2][0] + m.m[3][0],
-                 this.x * m.m[0][1] + this.y * m.m[1][1] + this.z * m.m[2][1] + m.m[3][1],
-                 this.x * m.m[0][2] + this.y * m.m[1][2] + this.z * m.m[2][2] + m.m[3][2]))
-  }
+    return vec3(this.x * m.m[0][0] + this.y * m.m[1][0] + this.z * m.m[2][0],
+                this.x * m.m[0][1] + this.y * m.m[1][1] + this.z * m.m[2][1],
+                this.x * m.m[0][2] + this.y * m.m[1][2] + this.z * m.m[2][2]);
+  } // End of 'transform' function
+
+  pointTransform(m) {
+    return vec3(this.x * m.m[0][0] + this.y * m.m[1][0] + this.z * m.m[2][0] + m.m[3][0],
+                this.x * m.m[0][1] + this.y * m.m[1][1] + this.z * m.m[2][1] + m.m[3][1],
+                this.x * m.m[0][2] + this.y * m.m[1][2] + this.z * m.m[2][2] + m.m[3][2]);
+    }
   // counting length of vector3 function
   len() {
     let l = this.dot(this);

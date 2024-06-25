@@ -40,7 +40,7 @@ function initializeCommunication() {
     try {
       let js = JSON.parse(e.data.toString());
       if (js.type == "enter") {
-        window.localStorage.setItem("userName", js.value);
+        window.sessionStorage.setItem("userName", js.value);
         window.location.href = "/play";
       }
     } catch {}

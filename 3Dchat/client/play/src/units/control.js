@@ -45,6 +45,13 @@ class _control {
               rnd.camera.At,
               vec3(0, 1, 0));
     }
+    if (rnd.input.keysClick["KeyP"])
+      rnd.timer.isPause = !rnd.timer.isPause;
+    if (rnd.input.keysClick["Tab"] && rnd.IsOn) {
+      let myInput = document.getElementById("myTextArea");
+      myInput.focus();
+    }
+      
   }
 
   render() {}

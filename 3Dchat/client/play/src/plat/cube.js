@@ -8,7 +8,7 @@ class _cube {
   constructor(size, rnd) {
     this.vert = [];
     let V = [];
-    this.ind = [];
+    let ind = [];
 
     let l = size / 2;
 
@@ -26,73 +26,103 @@ class _cube {
     
     for (i = 0; i < 48; i++) {
       V[i] = vertex();
+      V[i].color = [0, 0, 0, 0];
       V[i].tex = vec3(0);
     }
     i = 0;
     V[i].tex = vec3(1, 0, 0);
     V[i++].pos = p02;
-    V[i].tex = vec3(0, 0, 0);
+    V[i].tex = vec3(1, 1, 0);
     V[i++].pos = p01;
-    V[i].tex = vec3(0, 1, 0);
+    V[i].tex = vec3(0, 0, 0);
     V[i++].pos = p03;
 
-    V[i].tex = vec3(0, 1, 0);
+    V[i].tex = vec3(0, 0, 0);    
     V[i++].pos = p03;
-    V[i].tex = vec3(0, 0, 0);
+    V[i].tex = vec3(1, 1, 0);
+    V[i++].pos = p01;
+    V[i].tex = vec3(0, 1, 0);
+    V[i++].pos = p04;
+
+    V[i].tex = vec3(1, 0, 0);
     V[i++].pos = p01;
     V[i].tex = vec3(1, 1, 0);
-    V[i++].pos = p04;
-
-    V[i++].pos = p01;
     V[i++].pos = p12;
+    V[i].tex = vec3(0, 0, 0);
     V[i++].pos = p11;
 
+    V[i].tex = vec3(0, 0, 0);    
     V[i++].pos = p01;
+    V[i].tex = vec3(1, 1, 0);
     V[i++].pos = p02;
     V[i++].pos = p12;
 
+    V[i].tex = vec3(1, 0, 0);
     V[i++].pos = p03;
+    V[i].tex = vec3(1, 1, 0);
     V[i++].pos = p13;
+    V[i].tex = vec3(0, 0, 0);
     V[i++].pos = p12;
 
+    V[i].tex = vec3(0, 0, 0);    
     V[i++].pos = p03;
+    V[i].tex = vec3(1, 1, 0);
     V[i++].pos = p12;
+    V[i].tex = vec3(0, 1, 0);
     V[i++].pos = p02;
 
+    V[i].tex = vec3(1, 0, 0);
     V[i++].pos = p03;
+    V[i].tex = vec3(1, 1, 0);
     V[i++].pos = p04;
+    V[i].tex = vec3(0, 0, 0);
     V[i++].pos = p13;
 
+    V[i].tex = vec3(0, 0, 0);    
     V[i++].pos = p04;
+    V[i].tex = vec3(1, 1, 0);
     V[i++].pos = p14;
+    V[i].tex = vec3(0, 1, 0);
     V[i++].pos = p13;
 
+    V[i].tex = vec3(1, 0, 0);
     V[i++].pos = p01;
+    V[i].tex = vec3(1, 1, 0);
     V[i++].pos = p11;
+    V[i].tex = vec3(0, 0, 0);
     V[i++].pos = p14;
 
+    V[i].tex = vec3(0, 0, 0);    
     V[i++].pos = p01;
+    V[i].tex = vec3(1, 1, 0);
     V[i++].pos = p14;
+    V[i].tex = vec3(0, 1, 0);
     V[i++].pos = p04;
 
     /* Top */
+    V[i].tex = vec3(1, 0, 0);
     V[i++].pos = p11;
+    V[i].tex = vec3(1, 1, 0);
     V[i++].pos = p12;
+    V[i].tex = vec3(0, 0, 0);
     V[i++].pos = p13;
 
+    V[i].tex = vec3(0, 0, 0);    
     V[i++].pos = p11;
+    V[i].tex = vec3(1, 1, 0);
     V[i++].pos = p13;
+    V[i].tex = vec3(0, 1, 0);
     V[i++].pos = p14;
 
     for (let k = 0; k < i; k++)
-      this.ind[k] = k;
+      ind[k] = k;
     
-    this.primmitive = prim(V, this.ind, rnd)
+    this.pr = prim(V, ind, rnd, rnd.shd[0])
     // this.primmitive.mtl.
   }
 
   draw(matr) {
-    this.primmitive.draw(matr);
+    this.pr.draw(matr);
   }
 }
 
