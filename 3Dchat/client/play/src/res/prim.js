@@ -17,7 +17,7 @@ export function vertex(...args) {
 }
 
 class _prim {
-  constructor(V, index, rnd, shd, isNotAutoNorm, drawMode) {
+  constructor(V, index, rnd, shd, isNotAutoNorm, drawMode, colorType, posType, normalType, texType) {
     this.numOfElements = 0;
     let pnts = [], i = 0;
     this.trans = mat4();  
@@ -55,6 +55,22 @@ class _prim {
     this.points = pnts;
     this.shd = shd;
     this.mtl = mtl()
+    if (colorType)
+      this.colorType = colorType;
+    else
+      this.colorType = rnd.gl.FLOAT;
+    if (normalType)
+      this.normalType = normalType;
+    else
+      this.normalType = rnd.gl.FLOAT;
+    if (posType)
+      this.posType = posType;
+    else
+      this.posType = rnd.gl.FLOAT;
+    if (texType)
+      this.texType = texType;
+    else
+      this.texType = rnd.gl.FLOAT;
   }
 
   minMaxBB(V) {
@@ -125,19 +141,19 @@ class _prim {
       this.rnd.gl.bufferData(this.rnd.gl.ARRAY_BUFFER, new Float32Array(this.points), this.rnd.gl.STATIC_DRAW);
 
       if (shd.attrs["InColor"] && shd.attrs["InColor"].loc != -1) {
-        this.rnd.gl.vertexAttribPointer(shd.attrs["InColor"].loc, 4, this.rnd.gl.FLOAT, false, 48, 0);
+        this.rnd.gl.vertexAttribPointer(shd.attrs["InColor"].loc, 4, this.colorType, false, 48, 0);
         this.rnd.gl.enableVertexAttribArray(shd.attrs["InColor"].loc);
       }
       if (shd.attrs["InPosition"].loc != -1) {
-        this.rnd.gl.vertexAttribPointer(shd.attrs["InPosition"].loc, 3, this.rnd.gl.FLOAT, false, 48, 16);
+        this.rnd.gl.vertexAttribPointer(shd.attrs["InPosition"].loc, 3, this.posType, false, 48, 16);
         this.rnd.gl.enableVertexAttribArray(shd.attrs["InPosition"].loc);
       }
       if (shd.attrs["InNormal"].loc != -1) {
-        this.rnd.gl.vertexAttribPointer(shd.attrs["InNormal"].loc, 3, this.rnd.gl.FLOAT, false, 48, 28);
+        this.rnd.gl.vertexAttribPointer(shd.attrs["InNormal"].loc, 3, this.normalType, false, 48, 28);
         this.rnd.gl.enableVertexAttribArray(shd.attrs["InNormal"].loc);
       }
       if (shd.attrs["InTexCoord"].loc != -1) {
-        this.rnd.gl.vertexAttribPointer(shd.attrs["InTexCoord"].loc, 2, this.rnd.gl.FLOAT, false, 48, 40);
+        this.rnd.gl.vertexAttribPointer(shd.attrs["InTexCoord"].loc, 2, this.texType, false, 48, 40);
         this.rnd.gl.enableVertexAttribArray(shd.attrs["InTexCoord"].loc);
       }
       this.rnd.gl.bindBuffer(this.rnd.gl.ELEMENT_ARRAY_BUFFER, this.indexArray);

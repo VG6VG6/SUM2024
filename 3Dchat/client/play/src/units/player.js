@@ -8,7 +8,8 @@ import { gltf } from "../res/gltf";
 export function playerUnit(...args) {
   return new _playerUnit(...args);
 }
-let socket = new WebSocket(`wss://${location.host}`);
+// let socket = new WebSocket(`wss://${location.host}`);
+let socket = new WebSocket(`ws://localhost:8000`);
 
 class _playerUnit {
   init(rnd) {

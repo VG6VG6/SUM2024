@@ -11,5 +11,7 @@
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4"
   },
-  "type": "module"
+  "type": "module",
+  "engines": {"node": "16.x"},
+  "scripts": {"start": "node main.js"}
 }

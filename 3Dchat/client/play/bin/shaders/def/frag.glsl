@@ -15,6 +15,12 @@ uniform vec3 CamLoc;
 
 uniform sampler2D Tex0;
 uniform sampler2D Tex1;
+uniform sampler2D Tex2;
+uniform sampler2D Tex3;
+uniform sampler2D Tex4;
+uniform sampler2D Tex5;
+uniform sampler2D Tex6;
+uniform sampler2D Tex7;
 
 /* Phong light model material representation type */
 uniform Material
@@ -49,9 +55,9 @@ vec3 Shade( vec3 sP, vec3 sN, vec3 sKd, vec3 sKs, float sPh )
   // Diffuse lighting 
   vec3 color = 0.0 * Kd * max(0.1, dot(sN, L));
 
-   // Specular
+  // Specular
   vec3 R;
-  //color += sKs * max(0.1, pow(dot((R = reflect(V, sN)), L), sPh));
+  color += sKs * max(0.1, pow(dot((R = reflect(V, sN)), L), sPh));
     
   color *= vec3(1.0);
   
@@ -63,23 +69,21 @@ void main( void )
   float nl = max(0.1, dot(DrawNormal, normalize(-CamDir)));
   vec3 N = DrawNormal;
 
-  //OutColor = vec4(DrawNormal, 1);
-  //OutColor = vec4(vec3(1, DrawTex) * nl, 1);
+
   OutColor = DrawColor;
   if (IsTexture0)
   {
     vec4 C1 = texture(Tex0, DrawTex);
     OutColor = C1;
-    //OutColor = vec4(0, 0, 0, 1);  
-    if (IsTexture1)
-    {
-      vec4 C1 = texture(Tex1, DrawTex);
-      N = C1.xyz;
-      OutColor += vec4(Shade(DrawPos, N, Kd, Ks, Ph), 1);
-    }
   }
   else
     OutColor += vec4(Shade(DrawPos, N, Kd, Ks, Ph), 1);
-  //OutColor = vec4(N, 1);
+
+  if (IsTexture7)
+  {
+    vec4 C1 = texture(Tex7, DrawTex);
+    N = C1.xyz;
+    OutColor += vec4(Shade(DrawPos, N, Kd, Ks, Ph), 1);
+  }
 }
 

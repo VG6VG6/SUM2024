@@ -51,62 +51,115 @@ class _gltf {
         let pnts = []
     
         let texId, image = [];
-        let Nooftextures = 0;
+        let Nooftextures = 0, lenght;
         if (material) {
           if (material.pbrMetallicRoughness)
             if (material.pbrMetallicRoughness.baseColorTexture) {
               texId = material.pbrMetallicRoughness.baseColorTexture.index;
-              image[Nooftextures] = img(`Tex${Nooftextures++}`, path + "/" + js.images[texId].uri);
+              if (js.images[texId])
+                image[Nooftextures] = img(`Tex${Nooftextures++}`, path + "/" + js.images[texId].uri);
             }
+          if (material.emissiveTexture) {
+              texId = material.emissiveTexture.index;
+              if (js.images[texId])
+                image[Nooftextures] = img(`Tex${Nooftextures++}`, path + "/" + js.images[texId].uri);
+          }
+          if (material.extensions) {
+            if (material.extensions.KHR_materials_pbrSpecularGlossiness) {
+              texId = material.extensions.KHR_materials_pbrSpecularGlossiness.diffuseTexture.index;
+              if (js.images[texId])
+                image[Nooftextures] = img(`Tex${Nooftextures++}`, path + "/" + js.images[texId].uri);
+            }
+          }
           if (material.normalTexture) {
             texId = material.normalTexture.index;
-            image[Nooftextures] = img(`Tex${Nooftextures++}`, path + "/" + js.images[texId].uri);
+            if (js.images[texId]) {
+              image[Nooftextures++] = img(`Tex7`, path + "/" + js.images[texId].uri);
+              image[Nooftextures - 1].isNorm = true;
+            }
           }
         }
           
         // index
         let view = js.bufferViews[accessors[4].bufferView]
         let ind, pos, normal, tex, color;
-        if (accessors[4].byteOffset)
-          ind = new Uint32Array(bin[view.buffer], view.byteOffset + accessors[4].byteOffset, accessors[4].count)
-        else
-          ind = new Uint32Array(bin[view.buffer], view.byteOffset, accessors[4].count)
+        if (accessors[4].componentType == rnd.gl.UNSIGNED_SHORT) {
+          if (accessors[4].byteOffset)
+            ind = new Uint16Array(bin[view.buffer], view.byteOffset + accessors[4].byteOffset, accessors[4].count)
+          else
+            ind = new Uint16Array(bin[view.buffer], view.byteOffset, accessors[4].count)  
+        } else if (accessors[4].componentType == rnd.gl.UNSIGNED_INT) {
+          if (accessors[4].byteOffset)
+            ind = new Uint32Array(bin[view.buffer], view.byteOffset + accessors[4].byteOffset, accessors[4].count)
+          else
+            ind = new Uint32Array(bin[view.buffer], view.byteOffset, accessors[4].count)
+        }
 
           // color
-        if (accessors[0]) {
-          if (accessors[0].type == "VEC4")
-            colorSize = 4;
-          else
-            colorSize = 3;
-          view = js.bufferViews[accessors[0].bufferView];
-            if (accessors[0].byteOffset)
-              color = new Float32Array(bin[view.buffer], view.byteOffset + accessors[0].byteOffset, accessors[0].count * colorSize)
-            else
-              color = new Float32Array(bin[view.buffer], view.byteOffset, accessors[0].count * colorSize)
-        }
+        
+          if (accessors[0]) {
+            view = js.bufferViews[accessors[0].bufferView];
+            if (view.byteStride) {
+              lenght = view.byteStride / 4 * accessors[0].count - view.byteStride / 4;
+            } else {
+              if (accessors[0].type == "VEC4")
+                colorSize = 4;
+              else
+                colorSize = 3;
+              lenght = accessors[0].count * colorSize - colorSize;
+            }
+            if (accessors[0].componentType == rnd.gl.UNSIGNED_SHORT) {
+              if (accessors[0].byteOffset)
+                color = new Uint16Array(bin[view.buffer], view.byteOffset + accessors[0].byteOffset, lenght)
+              else
+                color = new Uint16Array(bin[view.buffer], view.byteOffset, lenght)  
+            } else if (accessors[0].componentType == rnd.gl.FLOAT) {
+              if (accessors[0].byteOffset)
+                color = new Float32Array(bin[view.buffer], view.byteOffset + accessors[0].byteOffset, lenght)
+              else
+                color = new Float32Array(bin[view.buffer], view.byteOffset, lenght)
+            }
+          }
 
         // possition
-        view = js.bufferViews[accessors[1].bufferView];
-        if (accessors[1].byteOffset)
-          pos = new Float32Array(bin[view.buffer], view.byteOffset + accessors[1].byteOffset, accessors[1].count * 3)
+        let posView = js.bufferViews[accessors[1].bufferView];
+        if (posView.byteStride)
+          lenght = accessors[1].count * posView.byteStride / 4;
         else
-          pos = new Float32Array(bin[view.buffer], view.byteOffset, accessors[1].count * 3)
+          lenght = accessors[1].count * 3;
 
+        if (accessors[1].byteOffset)
+          pos = new Float32Array(bin[posView.buffer], posView.byteOffset + accessors[1].byteOffset, lenght)
+        else
+          pos = new Float32Array(bin[posView.buffer], posView.byteOffset, lenght)
+        
         // normal
+        let normView
         if (accessors[2]) {
-          view = js.bufferViews[accessors[2].bufferView];
+          normView = js.bufferViews[accessors[2].bufferView];
+          if (normView.byteStride)
+            lenght = accessors[2].count * normView.byteStride / 4 - normView.byteStride / 4
+          else
+            lenght = accessors[2].count * 3;
           if (accessors[2].byteOffset)
-            normal = new Float32Array(bin[view.buffer], view.byteOffset + accessors[2].byteOffset, accessors[2].count * 3)
+            normal = new Float32Array(bin[normView.buffer], normView.byteOffset + accessors[2].byteOffset, lenght)
           else
-            normal = new Float32Array(bin[view.buffer], view.byteOffset, accessors[2].count * 3)
+            normal = new Float32Array(bin[normView.buffer], normView.byteOffset, lenght)
         }
+
         // texture coords
+        let texView
         if (accessors[3]) {
-          view = js.bufferViews[accessors[3].bufferView];
-          if (accessors[3].byteOffset)
-            tex = new Float32Array(bin[view.buffer], view.byteOffset + accessors[3].byteOffset, accessors[3].count * 2)
+          texView = js.bufferViews[accessors[3].bufferView];
+          if (texView.byteStride)
+            length = accessors[3].count * texView.byteStride / 4 - texView.byteStride / 4;
           else
-            tex = new Float32Array(bin[view.buffer], view.byteOffset, accessors[3].count * 2)
+            length = accessors[3].count * 2
+
+          if (accessors[3].byteOffset)
+            tex = new Float32Array(bin[texView.buffer], texView.byteOffset + accessors[3].byteOffset, length)
+          else
+            tex = new Float32Array(bin[texView.buffer], texView.byteOffset, length)
         }
 
         // make vertexes
@@ -119,21 +172,32 @@ class _gltf {
                 pnts[h].color = [color[h * 4], color[h * 4 + 1], color[h * 4 + 2], 1];
             else
               pnts[h].color = [0, 0, 0, 0];
-          pnts[h].pos = vec3(pos[h * 3], pos[h * 3 + 1], pos[h * 3 + 2])
+          pnts[h].pos = vec3(pos[h * posView.byteStride / 4], pos[h * posView.byteStride / 4 + 1], pos[h * posView.byteStride / 4 + 2])
           if (normal)
-            pnts[h].n = vec3(normal[h * 3], normal[h * 3 + 1], normal[h * 3 + 2])
+            pnts[h].n = vec3(normal[h * normView.byteStride / 4], normal[h * normView.byteStride / 4 + 1], normal[h * normView.byteStride / 4 + 2])
           else
             pnts[h].n = vec3(0);
           if (tex)
-            pnts[h].tex = vec3(tex[h * 2], -tex[h * 2 + 1])
+            pnts[h].tex = vec3(tex[h * texView.byteStride / 4], -tex[h * texView.byteStride / 4 + 1])
           else
             pnts[h].tex = vec3(0);
         }
         // create primitive
-        prims.push(prim(pnts, ind, rnd, rnd.shd[0], true, js.meshes[i].primitives[0].mode));
-        prims[prims.length - 1].mtl = mtl();
-        for (let t = 0; t < Nooftextures; t++) 
-          prims[prims.length - 1].mtl.textureAttach(texture(image[t], rnd.gl.TEXTURE_2D, rnd), t)
+        let c, n, t;
+        if (accessors[0])
+          c = accessors[0].componentType;
+        if (accessors[2])
+          n = accessors[2].componentType;
+        if (accessors[3])
+          t = accessors[3].componentType;
+        prims.push(prim(pnts, ind, rnd, rnd.shd[0], true, js.meshes[i].primitives[0].mode, 
+          c, accessors[1].componentType, n, t));
+        prims[prims.length - 1].mtl = mtl.getFromLib("Gold");
+        for (let t = 0; t < Nooftextures; t++)
+          if (image[t].isNorm)
+            prims[prims.length - 1].mtl.textureAttach(texture(image[t], rnd.gl.TEXTURE_2D, rnd), 7)
+          else
+            prims[prims.length - 1].mtl.textureAttach(texture(image[t], rnd.gl.TEXTURE_2D, rnd), t)
       }
       this.mesh[i] = prims;
     }
