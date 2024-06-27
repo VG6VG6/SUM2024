@@ -31,6 +31,7 @@ class _rend {
     /* Set camera*/
     this.camera = cam;
     this.timer = new timer();
+    this.isCameraMode = true;
 
     mtl.loadLib(this);
   }
@@ -46,7 +47,8 @@ class _rend {
         this.timer.response();
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
-        this.input.responseCamera(this)
+        if (this.isCameraMode)
+          this.input.responseCamera(this)
         unit().response(this);
         unit().render(this);
       } else if (this.shd[0].id != null) {

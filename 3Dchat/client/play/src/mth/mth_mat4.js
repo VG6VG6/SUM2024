@@ -9,6 +9,11 @@ class _mat4 {
   constructor (m = null) {
     if (m == null || m == undefined) {
       this.m = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
+    } else if (m.length == 16) {
+      this.m = new _mat4([[m[0], m[1], m[2], m[3]],
+                          [m[4], m[5], m[6], m[7]],
+                          [m[8], m[9], m[10], m[11]],
+                          [m[12], m[13], m[14], m[15]]]);
     } else if (typeof m == 'object' && m.length == 4) {
       this.m = m;
     } else {

@@ -2,24 +2,32 @@ body::-webkit-scrollbar
 {
   display: none;
 }
-#regCanvas {
-  border: 1px red, solid;
+body {
+  background-image: url("../play/bin/images/galaxy.PNG");
+}
+
+#register {
+  margin-top: 18%;
+  margin-left: 41%;
 }
 
 #regText {
   text-decoration: none;
-  font-size: 30px;
+  font-size: 60px;
   text-align: center;
-  text-shadow: 0 1px 0 #003CC5;
+  text-shadow: 0 1px 0 #86abff;
 }
-
+::placeholder {
+  color: rgba(0, 0, 0, 0.80);
+  /* opacity: 1; Firefox */
+}
 #regName {
   font-size: 30px;
   border: 1px #003CC5 solid;
   border-radius: 10px;
   text-decoration: none;
-  color: white;
-  background: #0B63F6;
+  color: rgb(0, 0, 0);
+  background: #0b61f64f;
 }
 
 #regButton {
@@ -39,4 +47,14 @@ body::-webkit-scrollbar
   box-shadow: none;
   position: relative;
   top: 5px;
+}
+
+#imageBox {
+  margin-left: 15%;
+}
+
+.images {
+  height: 80px;
+  width: 80px;
+  border-radius: 15px;
 }

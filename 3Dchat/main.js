@@ -14,14 +14,14 @@ let users;
 
 async function main() {
   // Connectiong to database
-  const dburl = "mongodb://localhost:27017/"
+  const dburl = "mongodb+srv://doadmin:x62jNC54Pi1W3t98@db-mongodb-pml30-2024-12312526.mongo.ondigitalocean.com/admin?tls=true&authSource=admin"
   const client = new MongoClient(dburl);
 
   const connection = await client.connect();
-  const database = "3DchatDB";
+  const database = "PML30-2024-J";
   const db = connection.db(database);
-  users = db.collection("Users");
-  messages = db.collection("Messages");
+  users = db.collection("VG6_3Dchat_Users");
+  messages = db.collection("VG6_3Dchat_Messages");
   const ans = await messages.find().toArray();
   for (let elem of ans)
     messageArray.push({name: elem.name, text: elem.text, logo: elem.logo})
@@ -32,10 +32,10 @@ async function main() {
   const wss = new WebSocketServer({server});
 
   app.use(express.static("client"));
-    const host = "localhost"; ////192.168.30.82
+    // const host = "localhost"; ////192.168.30.82
     const port = 8000;
-  server.listen(port, host, () => {
-    console.log(`Server init in http://${host}:${port}`);
+  server.listen(port, () => {
+    console.log(`Server init`);
   })
 
   let js
@@ -53,7 +53,7 @@ async function main() {
             else
               return
           }
-          ws.send(JSON.stringify({type: "enter", value: js.value}));
+          ws.send(JSON.stringify({type: "enter", value: js.value, charecter: js.charecter}));
 
         } else if (js.type == "player move") {
           for (let elem of wss.clients) {
@@ -71,6 +71,11 @@ async function main() {
       } catch {}
     })
     ws.send(JSON.stringify({type: "message array", array: messageArray}))
+  ws.on("close", async () => {
+    for (let elem of wss.clients)
+      elem.send(JSON.stringify({type: "event", event: "disconnection"}));
+
+  });
   })
 }
 

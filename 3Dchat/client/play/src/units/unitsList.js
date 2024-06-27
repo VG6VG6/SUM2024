@@ -4,9 +4,9 @@ import { playerUnit } from "./player";
 import { GLTFUnit } from "./GLTF";
 
 let units = [], unitCounts = 0;
-// units.push(sampleUnit()), unitCounts++;
+units.push(sampleUnit()), unitCounts++;
 units.push(control()), unitCounts++;
-//units.push(playerUnit()), unitCounts++;
+units.push(playerUnit()), unitCounts++;
 units.push(GLTFUnit()), unitCounts++;
 
 

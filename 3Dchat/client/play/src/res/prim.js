@@ -125,7 +125,7 @@ class _prim {
       this.rnd.gl.bufferData(this.rnd.gl.ARRAY_BUFFER, new Float32Array(this.points), this.rnd.gl.STATIC_DRAW);
 
       if (shd.attrs["InColor"] && shd.attrs["InColor"].loc != -1) {
-        this.rnd.gl.vertexAttribPointer(shd.attrs["InColor"].loc, 3, this.rnd.gl.FLOAT, false, 48, 0);
+        this.rnd.gl.vertexAttribPointer(shd.attrs["InColor"].loc, 4, this.rnd.gl.FLOAT, false, 48, 0);
         this.rnd.gl.enableVertexAttribArray(shd.attrs["InColor"].loc);
       }
       if (shd.attrs["InPosition"].loc != -1) {
@@ -137,7 +137,7 @@ class _prim {
         this.rnd.gl.enableVertexAttribArray(shd.attrs["InNormal"].loc);
       }
       if (shd.attrs["InTexCoord"].loc != -1) {
-        this.rnd.gl.vertexAttribPointer(shd.attrs["InTexCoord"].loc, 3, this.rnd.gl.FLOAT, false, 48, 40);
+        this.rnd.gl.vertexAttribPointer(shd.attrs["InTexCoord"].loc, 2, this.rnd.gl.FLOAT, false, 48, 40);
         this.rnd.gl.enableVertexAttribArray(shd.attrs["InTexCoord"].loc);
       }
       this.rnd.gl.bindBuffer(this.rnd.gl.ELEMENT_ARRAY_BUFFER, this.indexArray);

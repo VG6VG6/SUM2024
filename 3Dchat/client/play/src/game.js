@@ -15,6 +15,8 @@ window.addEventListener("load", () => {
   let myInput = document.getElementById("myTextArea");
   initializeCommunication();
 
+  let logo = `bin/images/${Number(window.sessionStorage.getItem("userCharecter")) + 1}.PNG`
+
   canvas.width = document.body.clientWidth;
   canvas.height = window.innerHeight;
 
@@ -26,6 +28,8 @@ window.addEventListener("load", () => {
     if (e.code == 'Enter' && myInput.value != "") {
       socket.send(JSON.stringify({type: "message", 
                                   name: window.sessionStorage.getItem("userName"),
+                                  logo: logo,
+                                  // logo: `bin/images/1.PNG`,
                                   text: myInput.value}))
       myInput.value = "";
     }

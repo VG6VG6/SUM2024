@@ -54,7 +54,7 @@ export class input {
       "ArrowDown", "Shift", "Control", "Alt", "ShiftLeft", "ShiftRight", "ControlLeft",
       "ControlRight", "PageUp", "PageDown", "End", "Home",
       "Digit0", "Digit1",
-      "KeyA", "KeyW", "KeyS", "KeyD",
+      "KeyA", "KeyW", "KeyS", "KeyD", "KeyG", "KeyC",
       "Numpad0", "NumpadMultiply",
       "F1",
     ].forEach(key => {
