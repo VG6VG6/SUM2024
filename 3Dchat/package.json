@@ -3,9 +3,17 @@
     "express": "^4.19.2",
     "hammerjs": "^2.0.8",
     "mongodb": "^6.7.0",
+    "rollup": "^4.18.0",
     "ws": "^8.17.1"
   },
   "type": "module",
-  "engines": {"node": "16.x"},
-  "scripts": {"start": "node main.js"}
+  "engines": {
+    "node": "16.x"
+  },
+  "scripts": {
+    "start": "node main.js"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4"
+  }
 }
